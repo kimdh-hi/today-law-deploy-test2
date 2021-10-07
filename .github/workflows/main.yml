@@ -19,7 +19,7 @@ jobs:
 
       - name: upload html css js file to S3
         run: |
-          aws s3 sync templates s3://todaylaw-s3/templates --acl public-read
+          aws s3 sync templates s3://todaylaw-s3/templates --acl public--read
           aws s3 sync static s3://todaylaw-s3/static --acl public--read
 
       - name: Upload binary to S3 bucket
