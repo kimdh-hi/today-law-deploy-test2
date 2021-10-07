@@ -17,6 +17,7 @@ jobs:
       - name: Checkout source code.
         uses: actions/checkout@master
 
+      #
       - name: upload html css js file to S3
         run: |
           aws s3 sync ./templates s3://todaylaw-s3/templates --acl public-read
@@ -37,6 +38,5 @@ jobs:
         env:
           # CloudFront id 세팅
           DISTRIBUTION: ${{ secrets.DISTRIBUTION_ID }}
-          PATHS: 'templates/index.html'
           run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths "/*"
         continue-on-error: true
