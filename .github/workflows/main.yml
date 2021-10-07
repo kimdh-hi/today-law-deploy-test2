@@ -1,4 +1,5 @@
-name: backend
+name: my-front
+
 on:
   push:
     branches:
@@ -6,39 +7,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # IAM key 세팅 [ repo - settings - secrets - new repository secret ]
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: 'ap-northeast-2'
 
     steps:
       - name: Checkout source code.
         uses: actions/checkout@master
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
+      - name: upload html css js file to S3
+        run: |
+          aws s3 sync templates s3://todaylaw-s3/templates --acl public-read
+          aws s3 sunc static s3://todaylaw-s3/static --acl public--read
+
+      - name: Upload binary to S3 bucket
+        uses: jakejarvis/s3-sync-action@master # 이미 정의된 action을 가져와서 사용
         with:
-          python-version: "3.8"
+          args: --acl public-read --exclude '*' --include 'index.html' --include '/static/*' -delete
+        env:
+           # s3 bucket 이름 세팅 [ repo - settings - secrets - new repository secret ]
+          AWS_S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+          SOURCE_DIR: 'templates'
+          DEST_DIR: 'static'
 
-      - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
-
-      - name: Get timestamp
-        uses: gerred/actions/current-time@master
-        id: current-time
-
-      - name: Run string replace
-        uses: frabert/replace-string-action@master
-        id: format-time
-        with:
-          pattern: '[:\.]+'
-          string: "${{ steps.current-time.outputs.time }}"
-          replace-with: '-'
-          flags: 'g'
-
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v16
-        with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: todaylaw
-          environment_name: Todaylaw-env
-          version_label: "python-${{ steps.format-time.outputs.replaced }}"
-          region: ap-northeast-2
-          deployment_package: deploy.zip
+      - name: Invalidate cache CloudFront
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          # CloudFront id 세팅
+          DISTRIBUTION: ${{ secrets.DISTRIBUTION_ID }}
+          PATHS: '/index.html'
+        continue-on-error: true
