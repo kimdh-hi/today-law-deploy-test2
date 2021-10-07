@@ -37,5 +37,5 @@ jobs:
         env:
           # CloudFront id 세팅
           DISTRIBUTION: ${{ secrets.DISTRIBUTION_ID }}
-          PATHS: '/index.html'
+          PATHS: 'templates/index.html'
         continue-on-error: true
