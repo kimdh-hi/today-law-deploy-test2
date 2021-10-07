@@ -37,5 +37,5 @@ jobs:
         env:
           # CloudFront id 세팅
           DISTRIBUTION: ${{ secrets.DISTRIBUTION_ID }}
-          PATHS: 'templates/index.html'
+          run: aws cloudfront create-invalidation --distribution-id ${{secrets.DISTRIBUTION_ID}} --paths "/*"
         continue-on-error: true
