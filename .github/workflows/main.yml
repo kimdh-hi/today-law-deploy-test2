@@ -25,7 +25,7 @@ jobs:
       - name: Upload binary to S3 bucket
         uses: jakejarvis/s3-sync-action@master # 이미 정의된 action을 가져와서 사용
         with:
-          args: --acl public-read --exclude '*' --include 'index.html' --include '/static/*' -delete
+          args: --acl public-read --exclude '*' --include 'index.html' --include '/static/*' --delete
         env:
            # s3 bucket 이름 세팅 [ repo - settings - secrets - new repository secret ]
           AWS_S3_BUCKET: ${{ secrets.BUCKET_NAME }}
