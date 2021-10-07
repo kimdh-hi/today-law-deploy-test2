@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Today 국회</title>
+    <link rel="shortcut icon" href="../static/favicon.png" type="image/x-icon">
+    <meta property="og:title" content="오늘의 법"/>
+    <meta property="og:description" content="오늘도 발의되는 여러 법안들 간편하게 살펴보자!!"/>
+    <meta property="og:image" content="{{ url_for('static', filename='congress.png') }}"/>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/xeicon@2.3.3/xeicon.min.css">
+    <!-- img -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8" src="../static/js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../static/js/jquery.vticker.min.js"></script>
+    <!-- 폰트 JUA -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <!-- 폰트 Nanum Gothic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <!-- js 불러오기 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="/static/js/index.js"></script>
+    <script src="/static/js/scroll.js"></script>
+    <script src="/static/js/login.js"></script>
+</head>
+
+<body>
+
+<section class="hero is-info is-small">
+    <div class="hero-head">
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a class="navbar-item">
+                        <img onclick="window.location.href='/'" src="/static/congress.png" alt="Logo">
+                    </a>
+                    <span class="navbar-burger" data-target="navbarMenuHeroB">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+                </div>
+                <div id="navbarMenuHeroB" class="navbar-menu">
+                    <div class="navbar-end">
+                        <a href="/" class="navbar-item">
+                            Today 국회
+                        </a>
+                        <a href="/category" class="navbar-item">
+                            카테고리별 법안목록
+                        </a>
+                        <a class="navbar-item">
+                            메뉴2
+                        </a>
+                        <span class="navbar-item">
+              <a onclick="show_login_modal()" class="button is-info is-inverted" id="login_button">
+                <span >로그인</span>
+              </a>
+                            <a onclick="logout()" class="button is-info is-inverted is-hidden" id="logout_button">
+                <span>로그아웃</span>
+              </a>
+            </span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="box">
+        <span style="font-weight: bold; font-size: large;">이번주 조회수 순위</span>
+        <div class="rank-board" id="ranking-box">
+            <ul class="rank-list is-hidden" id="ranking-list">
+                <li>조회된 법안이 없습니다.</li>
+                <li>조회된 법안이 없습니다.</li>
+                <li>조회된 법안이 없습니다.</li>
+                <li>조회된 법안이 없습니다.</li>
+                <li>조회된 법안이 없습니다.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="quickmenu">
+        <ul>
+            <li onclick="scrollToTop()" class="far fa-caret-square-up fa-2x" style="color: rgb(62,142,208)">
+            </li>
+            <li onclick="scrollToBottom()" class="far fa-caret-square-down fa-2x" style="color: rgb(62,142,208)"></li>
+        </ul>
+    </div>
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <p class="title">
+                Today 국회
+            </p>
+            <img onclick="window.location.href='/'" class="title-logo" src="/static/congress.png" alt="Logo"/>
+            <p class="subtitle" style="margin: auto">
+                국회 발의 법안 간편하게 보자!
+            </p>
+            <br><br>
+            <div class="has-text-centered">
+                <div class="select is-medium">
+                    <select id="select-condition">
+                        <option value="title">법안이름</option>
+                        <option value="name">의원이름</option>
+                    </select>
+                </div>
+                <input id="search-list" class="input is-medium" type="text" style="width: 50%"
+                       placeholder="검색어를 입력하세요.">
+                <button class="button is-light is-medium" onclick="search()">검색</button>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="hero-foot">
+        <div class="card" style="padding-left: 0em">
+            <nav class="tabs is-boxed">
+
+                <ul class="tab_title">
+                    <li class="is-active">
+                        <a>전체 보기</a>
+                    </li>
+                    <li id="bookmark-tab">
+                        <a>⭐ 즐겨찾기</a>
+                    </li>
+                    <li id="wish">
+                        <a>💡 청원</a>
+                    </li>
+                    <li style="margin-left: auto;">
+                        <a>👍🏻 인기순</a>
+                    </li>
+                </ul>
+
+            </nav>
+        </div>
+
+        <div class="card-container">
+
+            <div class="card-list on" id="laws-box">
+
+            </div>
+
+            <div class="card-list" id="bookmark">
+
+            </div>
+            <div class="card-list" id="wish">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">당신의 의견을</h5>
+                        <h3 class="card-title">국회에 전달하세요!</h3><br>
+                        <button onclick="openClose()" id="btn-post-box" type="button" class="btn btn-primary">지금
+                            청원하기
+                        </button>
+                        <div id="post-box" class="form-post" style="display:none">
+                            <div>
+                                <div class="form-group">
+                                    <label for="post-comment">청원 제목</label>
+                                    <input type="email" class="form-control" id="exampleInputEmail1"
+                                           aria-describedby="emailHelp" placeholder="청원제목을 입력해주세요">
+                                </div>
+                                <div class="form-group">
+                                    <label for="post-comment">카테고리</label>
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>카테고리를 선택해주세요</option>
+                                        <option value="1">정치</option>
+                                        <option value="2">수사</option>
+                                        <option value="3">재정</option>
+                                        <option value="4">교육</option>
+                                        <option value="5">외교</option>
+                                        <option value="6">재난</option>
+                                        <option value="7">행정</option>
+                                        <option value="8">문화</option>
+                                        <option value="9">농업</option>
+                                        <option value="10">소비자</option>
+                                        <option value="11">산업</option>
+                                        <option value="12">보건의료</option>
+                                        <option value="13">복지</option>
+                                        <option value="14">국토</option>
+                                        <option value="15">인권</option>
+                                        <option value="16">기타</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="post-comment">청원 내용</label>
+                                    <textarea id="post-comment" class="form-control" rows="3"></textarea>
+                                </div>
+                                <button type="button" class="btn btn-primary" id onclick="postArticle()">작성완료</button>
+                            </div>
+
+                        </div>
+                        <hr>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">분류</th>
+                                <th scope="col">제목</th>
+                                <th scope="col">참여인원</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th scope="row">보건의료</th>
+                                <td>간호사 1인당 담당 환자수 축소해주세요!</td>
+                                <td>17,339명</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">국토</th>
+                                <td>선원법 제62조제5항 개정</td>
+                                <td>162명</td>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-list" id="likes">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
